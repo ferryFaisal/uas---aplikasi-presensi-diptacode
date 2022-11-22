@@ -1,53 +1,57 @@
 <?php
 session_start();
 
-
 require 'connect.php';
-$name = $nim = $kelas = $success = '';
-$nameErr = $nimErr = $kelasErr = '';
-$valName = $valNim = $valEmail = $valRole = $valPass = $valCpass = false;
+$name = $password = $confirmPassword = '';
+$nameErr = $passwordErr = $confirmPasswordErr = '';
+$valName = $valPass = $valCPass = $valPassEmpty = $valCPassEmpty = false;
 
-function sanitize($data)
-{
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-}
+$nim = $_GET['nim'];
 
+$sql = "select * from mahasiswa where nim = '$nim'";
+
+$query = mysqli_query($conn, $sql);
+$result = mysqli_fetch_assoc($query);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (empty($_POST['name'])) {
-        $nameErr = 'Name is REQUIRED.';
+        $nameErr = 'Name cannot be empty.';
         $valName = false;
     } else {
-        $name = ($_POST['name']);
+        $name = $_POST['name'];
         $valName = true;
     }
-
-    if (empty($_POST['nim'])) {
-        $nimErr = 'NIM is REQUIRED.';
-        $valNim = false;
+    if (empty($_POST['inputPassword'])) {
+        $valPassEmpty = true;
+        $valPass = false;
     } else {
-        $nim = ($_POST['nim']);
-        $valNim = true;
+        $password = sha1($_POST['inputPassword']);
+        $valPass = true;
     }
-
-    if (empty($_POST['kelas'])) {
-        $kelasErr = 'Kelas is REQUIRED.';
-        $valKelas = false;
+    if (empty($_POST['confirmPassword'])) {
+        $confirmPasswordErr = "Confirm Password cannot be empty.";
+        $valCPassEmpty = true;
+        $valCPass = false;
     } else {
-        $kelas = ($_POST['kelas']);
-        $valKelas = true;
+        $confirmPassword = sha1($_POST['confirmPassword']);
+        if ($password != $confirmPassword) {
+            $confirmPasswordErr = "This password doesn't match with the previous one.";
+            $valCPass = false;
+        } else {
+            $valCPass = true;
+        }
     }
 }
-
 if (isset($_POST['submit'])) {
-    if ($valName && $valNim && $valKelas == true) {
-        $sql = "insert into mahasiswa values ('$nim', '$name', '$kelas')";
+    if ($valName && $valPass && $valCPass == true) {   
+        $sql = "update user set name = '$name', password = '$password' where email = '$email'";
         mysqli_query($conn, $sql);
-        $success = 'Student has been added';
+        header('Location: tables.php');
+    } elseif ($valName && $valPassEmpty && $valCPassEmpty == true) {   
+        $sql = "update user set name = '$name' where email = '$email'";
+        mysqli_query($conn, $sql);
+        header('Location: tables.php');
     }
 }
 
@@ -169,25 +173,20 @@ if (isset($_SESSION['login']) && ($_SESSION['role'] == 'dosen' || $_SESSION['rol
                 <?php
                 if ($_SESSION['role'] == 'dosen') {
                 ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-fw fa-folder"></i>
-                            <span>Users</span>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-                            <a class="dropdown-item" href="tables.php"><i class="fas fa-fw fa-user"></i> User Tables</a>
-                            <a class="dropdown-item" href="adduser.php"><i class="fas fa-fw fa-user"></i> Add a User</a>
-                        </div>
+                    <li class="nav-item">
+                        <a class="nav-link" href="tables.php">
+                            <i class="fas fa-fw fa-table"></i>
+                            <span>Users</span></a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-fw fa-folder"></i>
-                            <span>Products</span>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-                            <a class="dropdown-item" href="product-tables.php"><i class="fas fa-fw fa-table"></i> Product Tables</a>
-                            <a class="dropdown-item" href="addproduct.php"><i class="fas fa-fw fa-table"></i> Add a Product</a>
-                        </div>
+                    <li class="nav-item">
+                        <a class="nav-link" href="product-tables.php">
+                            <i class="fas fa-fw fa-table"></i>
+                            <span>Products</span></a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="addproduct.php">
+                            <i class="fas fa-fw fa-table"></i>
+                            <span>Add Products</span></a>
                     </li>
                     <li class="nav-item active">
                         <a class="nav-link" href="customer.php">
@@ -197,16 +196,15 @@ if (isset($_SESSION['login']) && ($_SESSION['role'] == 'dosen' || $_SESSION['rol
                 <?php
                 } elseif ($_SESSION['role'] == 'admin') {
                 ?>
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-fw fa-folder"></i>
-                            <span>Products</span>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-                            <a class="dropdown-item" href="product-tables.php"><i class="fas fa-fw fa-table"></i> Product Tables</a>
-                            <a class="dropdown-item" href="addproduct.php"><i class="fas fa-fw fa-table"></i> Add a Product</a>
-                        </div>
+                    <li class="nav-item">
+                        <a class="nav-link" href="product-tables.php">
+                            <i class="fas fa-fw fa-table"></i>
+                            <span>Products</span></a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="addproduct.php">
+                            <i class="fas fa-fw fa-table"></i>
+                            <span>Add Products</span></a>
                     </li>
                     <li class="nav-item active">
                         <a class="nav-link" href="customer.php">
@@ -214,7 +212,24 @@ if (isset($_SESSION['login']) && ($_SESSION['role'] == 'dosen' || $_SESSION['rol
                             <span>Customer</span></a>
                     </li>
                 <?php
-                } ?>
+                } elseif ($_SESSION['role'] == 'finance') {
+                ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="product-tables.php">
+                            <i class="fas fa-fw fa-table"></i>
+                            <span>Products</span></a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="addproduct.php">
+                            <i class="fas fa-fw fa-table"></i>
+                            <span>Add Products</span></a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="customer.php">
+                            <i class="fas fa-fw fa-table"></i>
+                            <span>Customer</span></a>
+                    </li>
+                <?php } ?>
             </ul>
             <div id="content-wrapper">
                 <div class="container-fluid">
@@ -223,57 +238,50 @@ if (isset($_SESSION['login']) && ($_SESSION['role'] == 'dosen' || $_SESSION['rol
                         <li class="breadcrumb-item">
                             <a href="index.php">Dashboard</a>
                         </li>
-                        <li class="breadcrumb-item active">Add Students</li>
+                        <li class="breadcrumb-item active">Edit Users</li>
                     </ol>
                     <div class="container">
                         <div class="card card-register mx-auto mt-5">
-                            <div class="card-header">Register a Student</div>
+                            <div class="card-header">Edit User</div>
                             <div class="card-body">
-                                <form action="" method="post">
+                                <form action="" method="post" enctype="multipart/form-data">
                                     <div class="form-group">
                                         <div class="form-row">
                                             <div class="col-md-12">
                                                 <div class="form-label-group">
-                                                    <input type="text" name="name" id="name" value="User" class="form-control" placeholder="First name" autofocus="autofocus">
+                                                    <input type="text" name="name" id="name" value="<?= $result['name'] ?>" class="form-control" placeholder="Name" autofocus="autofocus">
                                                     <label for="name">Name</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="form-row">
-                                            <div class="col-md-6 text-danger"><?= $nameErr ?></div>
+                                            <div class="col-md-12 text-danger"><?= $nameErr ?></div>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <div class="form-row">
-                                            <div class="col-md-12">
+                                            <div class="col-md-6">
                                                 <div class="form-label-group">
-                                                    <input type="text" name="nim" value="320201600" id="nim" class="form-control" placeholder="Email address">
-                                                    <label for="nim">NIM</label>
+                                                    <input type="password" name="inputPassword" id="inputPassword" class="form-control" placeholder="Password" autofocus="autofocus">
+                                                    <label for="inputPassword">Password</label>
                                                 </div>
                                             </div>
-                                            <div class="col-md-12 text-danger"><?= $nimErr ?></div>
+                                            <div class="col-md-6">
+                                                <div class="form-label-group">
+                                                    <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" placeholder="Confirm Password " autofocus="autofocus">
+                                                    <label for="confirmPassword">Confirm Password</label>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group">
                                         <div class="form-row">
-                                            <div class="col-md-12">
-                                                <div class="form-label-group">
-                                                    <select name="kelas" id="kelas" class="form-control form-select-lg" aria-label="form-select-lg">
-                                                        <option value="5A" selected>5A</option>
-                                                        <option value="5B">5B</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12 text-danger"> <?= $kelasErr ?></div>
+                                            <div class="col-md-6 text-danger"><?= $passwordErr ?></div>
+                                            <div class="col-md-6 text-danger"><?= $confirmPasswordErr ?></div>
                                         </div>
                                     </div>
-                                    
-                                    <button type="submit" name="submit" class="btn btn-primary btn-block">Register</button>
+                                    <button type="submit" name="submit" class="btn btn-primary btn-block">Edit user!</button>
                                     <!-- <a class="btn btn-primary btn-block" href="login.html">Register</a> -->
+
                                 </form>
-                                <div class="text-center primary">
-                                    <?= $success ?>
-                                </div>
                             </div>
                         </div>
                     </div>
