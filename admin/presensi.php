@@ -2,7 +2,7 @@
 session_start();
 require 'connect.php';
 
-$sql = "select * from mahasiswa";
+$sql = "select * from presensi";
 
 $query = mysqli_query($conn, $sql);
 
@@ -144,9 +144,12 @@ if (isset($_SESSION['login']) && $_SESSION['role'] == 'admin') {
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
+                                        <th>Tanggal</th>
+                                        <th>Makul</th>
+                                        <th>Kelas</th>
                                         <th>NIM</th>
                                         <th>Nama</th>
-                                        <th>Kelas</th>
+                                        <th>Status Presensi</th>
                                         <th>Edit</th>
                                     </thead>
                                     <tbody>
@@ -154,10 +157,13 @@ if (isset($_SESSION['login']) && $_SESSION['role'] == 'admin') {
                                         while ($result = mysqli_fetch_assoc($query)) :
                                         ?>
                                             <tr>
+                                                <td><?= $result['tgl_presensi']  ?></td>
+                                                <td><?= $result['makul']  ?></td>
+                                                <td><?= $result['kelas']  ?></td>
                                                 <td><?= $result['nim']  ?></td>
                                                 <td><?= $result['nama']  ?></td>
-                                                <td><?= $result['kelas']  ?></td>
-                                                <td><a href="edit-user.php?nim=<?= $result['nim'] ?>">Edit</a> | <a onclick="return confirm('Are you sure to delete this data?')" href="delete-mahasiswa.php?nim=<?= $result['nim'] ?>">Delete</a></td>
+                                                <td><?= $result['status_presensi']  ?></td>
+                                                <td><a href="edit-presensi.php?id=<?= $result['id'] ?>">Edit</a></td>
                                             </tr>
                                         <?php endwhile; ?>
                                     </tbody>
@@ -166,10 +172,6 @@ if (isset($_SESSION['login']) && $_SESSION['role'] == 'admin') {
                         </div>
                         <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                     </div>
-
-                    <p class="small text-center text-muted my-5">
-                        <em>More table examples coming soon...</em>
-                    </p>
 
                 </div>
                 <!-- /.container-fluid -->

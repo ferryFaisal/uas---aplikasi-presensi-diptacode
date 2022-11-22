@@ -2,7 +2,7 @@
 session_start();
 require 'connect.php';
 
-$sql = "select * from mahasiswa";
+$sql = "select * from user";
 
 $query = mysqli_query($conn, $sql);
 
@@ -144,9 +144,9 @@ if (isset($_SESSION['login']) && $_SESSION['role'] == 'admin') {
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
-                                        <th>NIM</th>
-                                        <th>Nama</th>
-                                        <th>Kelas</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
                                         <th>Edit</th>
                                     </thead>
                                     <tbody>
@@ -154,10 +154,10 @@ if (isset($_SESSION['login']) && $_SESSION['role'] == 'admin') {
                                         while ($result = mysqli_fetch_assoc($query)) :
                                         ?>
                                             <tr>
-                                                <td><?= $result['nim']  ?></td>
-                                                <td><?= $result['nama']  ?></td>
-                                                <td><?= $result['kelas']  ?></td>
-                                                <td><a href="edit-user.php?nim=<?= $result['nim'] ?>">Edit</a> | <a onclick="return confirm('Are you sure to delete this data?')" href="delete-mahasiswa.php?nim=<?= $result['nim'] ?>">Delete</a></td>
+                                                <td><?= $result['name']  ?></td>
+                                                <td><?= $result['email']  ?></td>
+                                                <td><?= $result['role']  ?></td>
+                                                <td><a href="edit-user.php?email=<?= $result['email'] ?>">Edit</a> | <a onclick="return confirm('Are you sure to delete this data?')" href="delete-user.php?email=<?= $result['email'] ?>">Delete</a></td>
                                             </tr>
                                         <?php endwhile; ?>
                                     </tbody>
