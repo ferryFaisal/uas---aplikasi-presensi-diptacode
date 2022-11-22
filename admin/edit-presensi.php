@@ -2,56 +2,37 @@
 session_start();
 
 require 'connect.php';
-$name = $role = $password = '';
-$nameErr = $roleErr = $passwordErr = '';
-$valName = $valRole = $valPassword = $passwordEmpty = false;
+$presensi = '';
+$presensiErr = '';
+$valPresensi = false;
 
-$email = $_GET['email'];
+$id = $_GET['id'];
 
-$sql = "select * from user where email = '$email'";
+$sql = "select * from presensi where id = '$id'";
 
 $query = mysqli_query($conn, $sql);
 $result = mysqli_fetch_assoc($query);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    if (empty($_POST['name'])) {
-        $nameErr = 'Name cannot be empty.';
-        $valName = false;
+    if (empty($_POST['presensi'])) {
+        $presensiErr = 'Presensi cannot be empty.';
+        $valPresensi = false;
     } else {
-        $name = $_POST['name'];
-        $valName = true;
+        $presensi = $_POST['presensi'];
+        $valPresensi = true;
     }
-    if (empty($_POST['role'])) {
-        $roleErr = 'Role cannot be empty';
-        $valRole = false;
-    } else {
-        $role = $_POST['role'];
-        $valRole = true;
-    }
-    if (empty($_POST['password'])) {
-        $passwordEmpty = true;
-        $valPassword = false;
-    } else {
-        $password = sha1($_POST['password']);
-        $valPassword = true;
-    }
+    
 }
 if (isset($_POST['submit'])) {
-    if ($valName && $valRole && $valPassword == true) {
-        $sql = "update user set name = '$name', role = '$role', password = '$password' where email = '$email'";
+    if ($valPresensi == true) {
+        $sql = "update presensi set status_presensi = '$presensi' where id = '$id'";
         mysqli_query($conn, $sql);
-        header('Location: user.php');
-    } elseif ($valName && $valRole && $passwordEmpty == true) {
-        $sql = "update user set name = '$name', role = '$role' where email = '$email'";
-        mysqli_query($conn, $sql);
-        header('Location: user.php');
-    } else {
-        header('Location: blank.html');
+        header('Location: presensi.php');
     }
 }
 
-if (isset($_SESSION['login']) &&  $_SESSION['role'] == 'admin') {
+if (isset($_SESSION['login']) && ($_SESSION['role'] == 'dosen' || $_SESSION['role'] == 'admin')) {
 ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -184,21 +165,18 @@ if (isset($_SESSION['login']) &&  $_SESSION['role'] == 'admin') {
                                         <div class="form-row">
                                             <div class="col-md-12">
                                                 <div class="form-label-group">
-                                                    <input type="text" name="name" id="name" value="<?= $result['name'] ?>" class="form-control" placeholder="Name" autofocus="autofocus">
+                                                    <input type="text" name="name" readonly id="name" value="<?= $result['nama'] ?>" class="form-control" placeholder="Name" autofocus="autofocus">
                                                     <label for="name">Name</label>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="form-row">
-                                            <div class="col-md-12 text-danger"><?= $nameErr ?></div>
-                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <div class="form-row">
                                             <div class="col-md-12">
                                                 <div class="form-label-group">
-                                                    <input type="text" name="email" readonly id="email" value="<?= $result['email'] ?>" class="form-control" placeholder="Name" autofocus="autofocus">
-                                                    <label for="name">Email</label>
+                                                    <input type="text" name="makul" readonly id="makul" value="<?= $result['makul'] ?>" class="form-control" placeholder="Name" autofocus="autofocus">
+                                                    <label for="makul">Makul</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -207,27 +185,26 @@ if (isset($_SESSION['login']) &&  $_SESSION['role'] == 'admin') {
                                         <div class="form-row">
                                             <div class="col-md-12">
                                                 <div class="form-label-group">
-                                                    <input type="password" name="password" id="password" class="form-control" placeholder="Name" autofocus="autofocus">
-                                                    <label for="password">Password</label>
+                                                    <input type="text" name="tgl" readonly id="tgl" value="<?= $result['tgl_presensi'] ?>" class="form-control" placeholder="Name" autofocus="autofocus">
+                                                    <label for="tgl">Tanggal</label>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="form-row">
-                                            <div class="col-md-12 text-danger"><?= $passwordErr ?></div>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <div class="form-row">
                                             <div class="col-md-12">
                                                 <div class="form-label-group">
-                                                    <select name="role" id="role" class="form-control form-select-lg" aria-label="form-select-lg">
-                                                        <option value="">Select a Role</option>
-                                                        <option value="admin">Admin</option>
-                                                        <option value="dosen">Dosen</option>
+                                                    <select name="presensi" id="presensi" class="form-control form-select-lg" aria-label="form-select-lg">
+                                                        <option value=""> -- Pilih Status -- </option>
+                                                        <option value="Hadir"> Hadir </option>
+                                                        <option value="Sakit"> Sakit </option>
+                                                        <option value="Izin"> Izin </option>
+                                                        <option value="Alpa"> Alpa </option>
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-12 text-danger"> <?= $roleErr ?></div>
+                                            <div class="col-md-12 text-danger"> <?= $presensiErr ?></div>
                                         </div>
                                     </div>
                                     <button type="submit" name="submit" class="btn btn-primary btn-block">Edit user!</button>

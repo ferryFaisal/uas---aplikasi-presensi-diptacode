@@ -2,13 +2,13 @@
 session_start();
 
 require 'connect.php';
-$name = $role = $password = '';
-$nameErr = $roleErr = $passwordErr = '';
-$valName = $valRole = $valPassword = $passwordEmpty = false;
+$name = $kelas = '';
+$nameErr = $kelasErr = '';
+$valName = $valKelas = false;
 
-$email = $_GET['email'];
+$nim = $_GET['nim'];
 
-$sql = "select * from user where email = '$email'";
+$sql = "select * from mahasiswa where nim = '$nim'";
 
 $query = mysqli_query($conn, $sql);
 $result = mysqli_fetch_assoc($query);
@@ -22,32 +22,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $name = $_POST['name'];
         $valName = true;
     }
-    if (empty($_POST['role'])) {
-        $roleErr = 'Role cannot be empty';
-        $valRole = false;
+    if (empty($_POST['kelas'])) {
+        $kelasErr = 'Kelas cannot be empty';
+        $valKelas = false;
     } else {
-        $role = $_POST['role'];
-        $valRole = true;
-    }
-    if (empty($_POST['password'])) {
-        $passwordEmpty = true;
-        $valPassword = false;
-    } else {
-        $password = sha1($_POST['password']);
-        $valPassword = true;
+        $kelas = $_POST['kelas'];
+        $valKelas = true;
     }
 }
 if (isset($_POST['submit'])) {
-    if ($valName && $valRole && $valPassword == true) {
-        $sql = "update user set name = '$name', role = '$role', password = '$password' where email = '$email'";
+    if ($valName && $valKelas == true) {
+        $sql = "update mahasiswa set nama = '$name', kelas = '$kelas' where nim = '$nim'";
         mysqli_query($conn, $sql);
-        header('Location: user.php');
-    } elseif ($valName && $valRole && $passwordEmpty == true) {
-        $sql = "update user set name = '$name', role = '$role' where email = '$email'";
-        mysqli_query($conn, $sql);
-        header('Location: user.php');
-    } else {
-        header('Location: blank.html');
+        header('Location: tables.php');
     }
 }
 
@@ -184,7 +171,7 @@ if (isset($_SESSION['login']) &&  $_SESSION['role'] == 'admin') {
                                         <div class="form-row">
                                             <div class="col-md-12">
                                                 <div class="form-label-group">
-                                                    <input type="text" name="name" id="name" value="<?= $result['name'] ?>" class="form-control" placeholder="Name" autofocus="autofocus">
+                                                    <input type="text" name="name" id="name" value="<?= $result['nama'] ?>" class="form-control" placeholder="Name" autofocus="autofocus">
                                                     <label for="name">Name</label>
                                                 </div>
                                             </div>
@@ -197,37 +184,14 @@ if (isset($_SESSION['login']) &&  $_SESSION['role'] == 'admin') {
                                         <div class="form-row">
                                             <div class="col-md-12">
                                                 <div class="form-label-group">
-                                                    <input type="text" name="email" readonly id="email" value="<?= $result['email'] ?>" class="form-control" placeholder="Name" autofocus="autofocus">
-                                                    <label for="name">Email</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="form-row">
-                                            <div class="col-md-12">
-                                                <div class="form-label-group">
-                                                    <input type="password" name="password" id="password" class="form-control" placeholder="Name" autofocus="autofocus">
-                                                    <label for="password">Password</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-row">
-                                            <div class="col-md-12 text-danger"><?= $passwordErr ?></div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="form-row">
-                                            <div class="col-md-12">
-                                                <div class="form-label-group">
-                                                    <select name="role" id="role" class="form-control form-select-lg" aria-label="form-select-lg">
-                                                        <option value="">Select a Role</option>
-                                                        <option value="admin">Admin</option>
-                                                        <option value="dosen">Dosen</option>
+                                                    <select name="kelas" id="kelas" class="form-control form-select-lg" aria-label="form-select-lg">
+                                                        <option value="">Kelas</option>
+                                                        <option value="5A">5A</option>
+                                                        <option value="5B">5B</option>
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-12 text-danger"> <?= $roleErr ?></div>
+                                            <div class="col-md-12 text-danger"> <?= $kelasErr ?></div>
                                         </div>
                                     </div>
                                     <button type="submit" name="submit" class="btn btn-primary btn-block">Edit user!</button>
