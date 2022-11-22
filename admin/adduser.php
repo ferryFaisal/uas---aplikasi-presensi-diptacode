@@ -144,77 +144,27 @@ if (isset($_SESSION['login']) && ($_SESSION['role'] == 'dosen' || $_SESSION['rol
 
             <!-- Sidebar -->
             <ul class="sidebar navbar-nav">
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a class="nav-link" href="index.php">
                         <i class="fas fa-fw fa-tachometer-alt"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-fw fa-folder"></i>
-                        <span>Pages</span>
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-                        <h6 class="dropdown-header">Login Screens:</h6>
-                        <a class="dropdown-item" href="login.php">Login</a>
-                        <a class="dropdown-item" href="register.php">Register</a>
-                        <a class="dropdown-item" href="forgot-password.php">Forgot Password</a>
-                        <div class="dropdown-divider"></div>
-                        <h6 class="dropdown-header">Other Pages:</h6>
-                        <a class="dropdown-item" href="404.php">404 Page</a>
-                        <a class="dropdown-item" href="blank.php">Blank Page</a>
-                    </div>
+                <li class="nav-item">
+                    <a class="nav-link" href="tables.php">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>Mahasiswa</span></a>
                 </li>
-                <?php
-                if ($_SESSION['role'] == 'dosen') {
-                ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-fw fa-folder"></i>
-                            <span>Users</span>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-                            <a class="dropdown-item" href="tables.php"><i class="fas fa-fw fa-user"></i> User Tables</a>
-                            <a class="dropdown-item" href="adduser.php"><i class="fas fa-fw fa-user"></i> Add a User</a>
-                        </div>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-fw fa-folder"></i>
-                            <span>Products</span>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-                            <a class="dropdown-item" href="product-tables.php"><i class="fas fa-fw fa-table"></i> Product Tables</a>
-                            <a class="dropdown-item" href="addproduct.php"><i class="fas fa-fw fa-table"></i> Add a Product</a>
-                        </div>
-                    </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="customer.php">
-                            <i class="fas fa-fw fa-table"></i>
-                            <span>Customer</span></a>
-                    </li>
-                <?php
-                } elseif ($_SESSION['role'] == 'admin') {
-                ?>
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-fw fa-folder"></i>
-                            <span>Products</span>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-                            <a class="dropdown-item" href="product-tables.php"><i class="fas fa-fw fa-table"></i> Product Tables</a>
-                            <a class="dropdown-item" href="addproduct.php"><i class="fas fa-fw fa-table"></i> Add a Product</a>
-                        </div>
-                    </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="customer.php">
-                            <i class="fas fa-fw fa-table"></i>
-                            <span>Customer</span></a>
-                    </li>
-                <?php
-                } ?>
+                <li class="nav-item">
+                    <a class="nav-link" href="user.php">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>User</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="presensi.php">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>Presensi</span></a>
+                </li>
             </ul>
             <div id="content-wrapper">
                 <div class="container-fluid">
