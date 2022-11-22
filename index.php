@@ -2,11 +2,26 @@
 session_start();
 require 'connect.php';
 
-$sql = 'select * from mahasiswa';
-$query = mysqli_query($conn, $sql);
+$a = $b = '';
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  $date = $_POST['tgl'];
+  $makul = $_POST['makul'];
+  $class = $_POST['kelas'];
+  $nim = $_POST['nim'];
+  $name = $_POST['nama'];
+  $presensi = $_POST['presensi'];
 
+  if (isset($_POST['submit'])) {
+    $sql = 'insert into presensi values';
+    for($i = 0; $i < count($nim); $i++) {
+      $sql .= "('', '$date', '$makul', '$class', '{$nim[$i]}','{$name[$i]}', '{$presensi[$i]}'),";
+    }
+    $sql = rtrim($sql, ',');
+    mysqli_query($conn, $sql);
+  }
+}
+if (isset($_SESSION['login']) && $_SESSION['role'] == 'dosen') {
 ?>
-
 
 <!doctype html>
 <html lang="en">
@@ -30,7 +45,7 @@ $query = mysqli_query($conn, $sql);
       <div class="card-body">
         <form method="POST" action="">
           <!-- <div class="form-group"> -->
-          <div class="row form-row mb-1">
+          <div class="row form-row mb-3">
             <div class="col-md-4">
               <div class="form-label-group">
                 <input type="date" id="tgl" name="tgl" class="form-control" placeholder="Tgl" autofocus="autofocus" value="">
@@ -50,10 +65,18 @@ $query = mysqli_query($conn, $sql);
               <div class="form-label-group">
                 <select name="kelas" id="kelas" class="form-control" autofocus="autofocus">
                   <option value=""> -- Pilih Kelas -- </option>
-                  <option value="5A"> 5A </option>
-                  <option value="5B"> 5B </option>
+                  <option value="5A" <?= $a ?>> 5A </option>
+                  <option value="5B" <?= $b ?>> 5B </option>
                 </select>
               </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="text-center">
+              <div class="form-label-group">
+                <button type="submit" class="btn btn-primary col-md-12" name="select">Select!</button>
+              </div>
+
             </div>
           </div>
           <hr>
@@ -63,35 +86,49 @@ $query = mysqli_query($conn, $sql);
             <div class="col-md-4"><strong>Status Presensi</strong></div>
           </div>
           <hr>
-          <?php while ($result = mysqli_fetch_assoc($query)): ?>
-          <div class="row form-row mb-1">
-            <div class="col-md-4">
-              <div class="form-label-group">
-                <input type="text" id="nim" name="nim" class="form-control" placeholder="NIM" autofocus="autofocus" readonly value="<?= $result['nim'] ?>">
+          <?php
+          if (isset($_POST['select'])) {
+
+            if ($_POST['kelas'] == '5A') {
+              $sql = "select * from mahasiswa where kelas = '5A'";
+              $query = mysqli_query($conn, $sql);
+            }
+            if ($_POST['kelas'] == '5B') {
+              $sql = "select * from mahasiswa where kelas = '5B'";
+              $query = mysqli_query($conn, $sql);
+            }
+            while ($result = mysqli_fetch_assoc($query)) :
+              
+          ?>
+              <div class="row form-row mb-1">
+                <div class="col-md-4">
+                  <div class="form-label-group">
+                    <input type="text" id="nim" name="nim[]" class="form-control" placeholder="NIM" autofocus="autofocus" readonly value="<?= $result['nim'] ?>">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-label-group">
+                    <input type="text" id="nama" name="nama[]" class="form-control" placeholder="Nama" autofocus="autofocus" readonly value="<?= $result['nama'] ?>">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-label-group">
+                    <select name="presensi[]" id="presensi" class="form-control" autofocus="autofocus">
+                      <option value=""> -- Pilih Status -- </option>
+                      <option value="Hadir" selected> Hadir </option>
+                      <option value="Sakit"> Sakit </option>
+                      <option value="Izin"> Izin </option>
+                      <option value="Alpa"> Alpa </option>
+                    </select>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-label-group">
-                <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama" autofocus="autofocus" readonly value="<?= $result['nama'] ?>">
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-label-group">
-                <select name="presensi" id="presensi" class="form-control" autofocus="autofocus">
-                  <option value=""> -- Pilih Status -- </option>
-                  <option value="Hadir"> Hadir </option>
-                  <option value="Sakit"> Sakit </option>
-                  <option value="Izin"> Izin </option>
-                  <option value="Alpa"> Alpa </option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <?php endwhile; ?>
+          <?php endwhile;
+          } ?>
           <!-- </div> -->
           <br>
           <p class="text-center">
-            <input type="submit" name="submit" value="Simpan Presensi" class="btn btn-primary btn-block">
+            <button type="submit" name="submit" class="btn btn-primary btn-block">Simpan Presensi</button>
           </p>
           <!-- <a class="btn btn-secondary btn-block" href="users.php">Cancel</a> -->
         </form>
@@ -104,3 +141,6 @@ $query = mysqli_query($conn, $sql);
 </body>
 
 </html>
+<?php } else {
+  echo "You must <a href='admin/login.php'>Log in</a> first as a Dosen to access this page.";
+  }?>
